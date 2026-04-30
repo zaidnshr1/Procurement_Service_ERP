@@ -2,7 +2,7 @@ package id.procurement.procurement_app.controller;
 
 import id.procurement.procurement_app.dto.auth.LoginRequest;
 import id.procurement.procurement_app.dto.auth.SignupRequest;
-import id.procurement.procurement_app.service.auth.AuthService;
+import id.procurement.procurement_app.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

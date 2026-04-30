@@ -31,6 +31,7 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String password;
 
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
