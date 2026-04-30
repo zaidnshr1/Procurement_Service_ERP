@@ -1,4 +1,4 @@
-package id.procurement.procurement_app.exception;
+package id.procurement.procurement_app.repository;
 
 import id.procurement.procurement_app.entity.ERole;
 import id.procurement.procurement_app.entity.Role;

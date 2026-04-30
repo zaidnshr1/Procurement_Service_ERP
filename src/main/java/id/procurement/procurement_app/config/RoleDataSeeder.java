@@ -2,7 +2,7 @@ package id.procurement.procurement_app.config;
 
 import id.procurement.procurement_app.entity.ERole;
 import id.procurement.procurement_app.entity.Role;
-import id.procurement.procurement_app.exception.RoleRepository;
+import id.procurement.procurement_app.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

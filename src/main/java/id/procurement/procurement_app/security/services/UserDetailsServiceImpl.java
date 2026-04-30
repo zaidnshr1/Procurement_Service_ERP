@@ -1,7 +1,7 @@
 package id.procurement.procurement_app.security.services;
 
 import id.procurement.procurement_app.entity.User;
-import id.procurement.procurement_app.exception.UserRepository;
+import id.procurement.procurement_app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

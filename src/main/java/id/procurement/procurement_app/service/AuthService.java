@@ -1,4 +1,4 @@
-package id.procurement.procurement_app.service.auth;
+package id.procurement.procurement_app.service;
 
 import id.procurement.procurement_app.dto.auth.JwtResponse;
 import id.procurement.procurement_app.dto.auth.LoginRequest;
@@ -7,8 +7,8 @@ import id.procurement.procurement_app.dto.auth.SignupRequest;
 import id.procurement.procurement_app.entity.ERole;
 import id.procurement.procurement_app.entity.Role;
 import id.procurement.procurement_app.entity.User;
-import id.procurement.procurement_app.exception.RoleRepository;
-import id.procurement.procurement_app.exception.UserRepository;
+import id.procurement.procurement_app.repository.RoleRepository;
+import id.procurement.procurement_app.repository.UserRepository;
 import id.procurement.procurement_app.security.jwt.JwtUtils;
 import id.procurement.procurement_app.security.services.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
