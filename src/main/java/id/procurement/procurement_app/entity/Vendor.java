@@ -25,6 +25,14 @@ public class Vendor {
     @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
+    private String accountNumber;
+
+    private String npwp;
+
+//    Builder.Default supaya nilai isActive tidak null
+//    vendors --> EVendor untuk mencetak status
     @Builder.Default
-    private Boolean isActive = true;
+    @Enumerated(EnumType.STRING)
+    private EVendor status;
 }

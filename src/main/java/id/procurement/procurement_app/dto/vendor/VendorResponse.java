@@ -6,6 +6,8 @@ public record VendorResponse(
         String address,
         String phone,
         String email,
-        Boolean isActive
+        String accountNumber,
+        String npwp,
+        Boolean status
 ) {
 }

@@ -15,6 +15,5 @@ public interface VendorMapper {
     Vendor toEntity(VendorRequest vendorRequest);
     VendorResponse toResponse(Vendor vendor);
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "isActive", ignore = true)
     void updateEntity(VendorRequest vendorRequest, @MappingTarget Vendor vendor);
 }

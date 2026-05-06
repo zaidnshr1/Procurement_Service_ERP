@@ -10,6 +10,10 @@ public record VendorRequest(
         @NotBlank(message = "nomor telepon vendor harus diisi")
         String phone,
         @Email(message = "perhatikan format email")
-        String email
+        String email,
+        @NotBlank(message = "nomor rekening harus diisi")
+        String accountNumber,
+        @NotBlank(message = "npwp harus diisi")
+        String npwp
 ) {
 }
