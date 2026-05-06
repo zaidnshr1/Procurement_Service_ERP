@@ -11,6 +11,7 @@ import java.util.Map;
 @RequestMapping("/api/health")
 public class HealthCheck {
 
+//    hanya untuk testing awal
     @GetMapping
     public ResponseEntity<Map<String, String>> heatlCheck() {
         return ResponseEntity.ok(Map.of("status", "up", "message", "Procurement Service Is Runing"));

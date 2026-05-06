@@ -13,6 +13,7 @@ public class RoleDataSeeder implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
 
+//    Generate pembuatan akun otomatis jika tidak ada di DB
     @Override
     public void run(String... args) throws Exception {
         if (roleRepository.findByRoleName(ERole.ROLE_STAFF).isEmpty()) {

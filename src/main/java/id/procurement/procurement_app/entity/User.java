@@ -31,6 +31,8 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String password;
 
+//    Builder.Default supaya isi roles tidak null
+//    Pembuatan junction table users -> user_role <- roles
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",

@@ -18,11 +18,13 @@ public class AuthController {
 
     private final AuthService authService;
 
+//    Login user
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
 
+//    Registrasi akun user
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest request) {
         try {
