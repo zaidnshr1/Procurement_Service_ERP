@@ -11,5 +11,5 @@ public interface VendorService {
     VendorResponse getById(String id);
     Page<VendorResponse> getAll(EVendor status, Pageable pageable);
     VendorResponse update(String id, VendorRequest vendorRequest);
-    void updateStatus(String id, EVendor newStatus);
+    void updateStatus(String id, EVendor newStatus, String reason);
 }

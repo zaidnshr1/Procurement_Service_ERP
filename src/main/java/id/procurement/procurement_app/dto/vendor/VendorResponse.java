@@ -1,5 +1,7 @@
 package id.procurement.procurement_app.dto.vendor;
 
+import id.procurement.procurement_app.entity.EVendor;
+
 public record VendorResponse(
         String id,
         String name,
@@ -8,6 +10,7 @@ public record VendorResponse(
         String email,
         String accountNumber,
         String npwp,
-        Boolean status
+        EVendor status,
+        String rejectionDescription
 ) {
 }

@@ -2,6 +2,7 @@ package id.procurement.procurement_app.controller;
 
 import id.procurement.procurement_app.dto.vendor.VendorRequest;
 import id.procurement.procurement_app.dto.vendor.VendorResponse;
+import id.procurement.procurement_app.dto.vendor.VendorRevisionRequest;
 import id.procurement.procurement_app.entity.EVendor;
 import id.procurement.procurement_app.service.VendorService;
 import jakarta.validation.Valid;
@@ -21,7 +22,29 @@ public class VendorController {
 
     private final VendorService vendorService;
 
-//    buat data vendor
+//    membuat data vendor baru, setelah itu status masih DRAFT dan setelah itu submit untuk status review
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'FINANCE_MANAGER')")
+    public ResponseEntity<VendorResponse> createVendor(@RequestBody @Valid VendorRequest request) {
+        return ResponseEntity.ok(vendorService.create(request));
+    }
+
+//    khusus ketika sudah dalam bentuk DRAFT terus submit buat pengajuan review ke direksi
+    @PostMapping("/{id}/submit")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FINANCE_MANAGER')")
+    public ResponseEntity<Void> submitForReview(@PathVariable String id) {
+        vendorService.updateStatus(id, EVendor.IN_REVIEW, null);
+        return ResponseEntity.noContent().build();
+    }
+
+//    khusus direksi untuk approve
+    @PostMapping("/{id}/approve")
+    @PreAuthorize("hasAnyRole('DIRECTOR')")
+    public ResponseEntity<Void> approveVendor(@PathVariable String id) {
+        vendorService.updateStatus(id, EVendor.ACTIVE, null);
+        return ResponseEntity.noContent().build();
+    }
+
 //    menampilkan data vendor. default status = ACTIVE (service layer) atau jika pakai parameter bisa untuk
 //    filter supaya mendapatkan list data lebih spesifik berdasarkan status
     @GetMapping
@@ -29,13 +52,6 @@ public class VendorController {
     public ResponseEntity<Page<VendorResponse>> getAllVendor(@RequestParam(required = false) EVendor status,
                                                              @PageableDefault(size = 10, sort = "name") Pageable pageable) {
         return ResponseEntity.ok(vendorService.getAll(status, pageable));
-    }
-
-//    membuat data vendor baru, setelah itu status masih IN_REVIEW dan butuh approval direksi untuk pengaktia
-    @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'FINANCE_MANAGER')")
-    public ResponseEntity<VendorResponse> createVendor(@RequestBody @Valid VendorRequest request) {
-        return ResponseEntity.ok(vendorService.create(request));
     }
 
 //    lihat detail data vendor dengan parameter id vendor
@@ -52,12 +68,30 @@ public class VendorController {
         return ResponseEntity.ok(vendorService.update(id, request));
     }
 
-//    update status vendor
-    @PostMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('ADMIN', 'FINANCE_MANAGER')")
-    public ResponseEntity<Void> updateStatus(@PathVariable String id,
-                                             @RequestParam EVendor targetStatus) {
-        vendorService.updateStatus(id, targetStatus);
+//    menonaktifkan vendor
+    @PostMapping("/{id}/deactivate")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FINANCE_MANAGER')")
+    public ResponseEntity<Void> deactivateVendor(@PathVariable String id,
+                                                 @RequestBody @Valid VendorRevisionRequest reason) {
+        vendorService.updateStatus(id, EVendor.INACTIVE, reason.description());
+        return ResponseEntity.noContent().build();
+    }
+
+//    mengaktifkan vendor melalui DRAFT terlebih dahulu selanjutnya ke IN_REVIEW
+    @PostMapping("{id}/activate")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'FINANCE_MANAGER')")
+    public ResponseEntity<Void> activateVendor(@PathVariable String id,
+                                               @RequestBody @Valid VendorRevisionRequest reason) {
+        vendorService.updateStatus(id, EVendor.DRAFT, reason.description());
+        return ResponseEntity.noContent().build();
+    }
+
+//    direktur menolak data vendor
+    @PostMapping("{id}/reject")
+    @PreAuthorize("hasAnyRole('DIRECTOR')")
+    public ResponseEntity<Void> rejectVendor(@PathVariable String id,
+                                             @RequestBody @Valid VendorRevisionRequest reason) {
+        vendorService.updateStatus(id, EVendor.RETURNED, reason.description());
         return ResponseEntity.noContent().build();
     }
 

@@ -9,6 +9,8 @@ import id.procurement.procurement_app.repository.VendorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ public class VendorServiceImpl implements VendorService{
     @Override
     public VendorResponse create(VendorRequest vendorRequest) {
         Vendor vendor = vendorMapper.toEntity(vendorRequest);
+        vendor.setStatus(EVendor.DRAFT);
         return vendorMapper.toResponse(vendorRepository.save(vendor));
     }
 
@@ -42,29 +45,60 @@ public class VendorServiceImpl implements VendorService{
         return vendors.map(vendorMapper::toResponse);
     }
 
-//    memperbarui data vendor berdasarkan id
+//    memperbarui data vendor berdasarkan id dan set ke DRAFT
     @Override
     public VendorResponse update(String id, VendorRequest vendorRequest) {
         Vendor existingVendor = vendorRepository.findById(id).orElseThrow();
         vendorMapper.updateEntity(vendorRequest, existingVendor);
+        existingVendor.setStatus(EVendor.DRAFT);
         Vendor savedVendor = vendorRepository.save(existingVendor);
         return vendorMapper.toResponse(savedVendor);
     }
 
-//    memperbarui data status vendor isActive = false
+//    memperbaharui status vendor di db
+    @Transactional
     @Override
-    public void updateStatus(String id, EVendor newStatus) {
+    public void updateStatus(String id, EVendor newStatus, String reason) {
         Vendor vendor = vendorRepository.findById(id).orElseThrow();
 
-        if (newStatus ==  EVendor.ACTIVE && vendor.getStatus() == EVendor.IN_REVIEW) {
-            vendor.setStatus(EVendor.ACTIVE);
-            vendorRepository.save(vendor);
-        } else if (newStatus == EVendor.INACTIVE) {
-            vendor.setStatus(EVendor.INACTIVE);
-            vendorRepository.save(vendor);
-        } else if (newStatus == EVendor.IN_REVIEW) {
-            vendor.setStatus(EVendor.IN_REVIEW);
-            vendorRepository.save(vendor);
+        switch (newStatus) {
+            case DRAFT -> handleDraft(vendor);
+            case IN_REVIEW -> handleSubmit(vendor);
+            case ACTIVE -> handleApprove(vendor);
+            case RETURNED -> handleReturn(vendor, reason);
+            case INACTIVE -> vendor.setRejectionDescription(reason);
         }
+
+        vendor.setStatus(newStatus);
+        vendorRepository.save(vendor);
+    }
+
+    private void handleDraft(Vendor vendor) {
+        if (vendor.getStatus() != EVendor.INACTIVE && vendor.getStatus() != EVendor.RETURNED && vendor.getStatus() != EVendor.DRAFT)
+            throw new IllegalStateException("data harus berstatus INACTIVE atau RETURNED");
+    }
+
+    private void handleSubmit(Vendor vendor) {
+        if (vendor.getStatus() != EVendor.DRAFT) throw new IllegalStateException("data harus berstatus DRAFT!");
+        vendor.setRejectionDescription(null);
+    }
+
+    private void handleApprove(Vendor vendor) {
+        if (vendor.getStatus() != EVendor.IN_REVIEW) throw new IllegalStateException("data harus berstatus IN_REVIEW!");
+        verifyDirector();
+        vendor.setRejectionDescription(null);
+    }
+
+    private void handleReturn(Vendor vendor, String reason) {
+        if (vendor.getStatus() != EVendor.IN_REVIEW) throw new IllegalStateException("data harus berstatus IN_REVIEW!");
+        verifyDirector();
+        vendor.setRejectionDescription(reason);
+    }
+
+    private void verifyDirector() {
+        boolean isDirector = SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities().stream().anyMatch(
+                        a -> a.getAuthority().equals("ROLE_DIRECTOR"));
+        if (!isDirector) throw new AccessDeniedException("tidak terverfikasi sebagai direktur");
     }
 }

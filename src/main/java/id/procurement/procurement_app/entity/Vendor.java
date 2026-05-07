@@ -32,7 +32,8 @@ public class Vendor {
 
 //    Builder.Default supaya nilai isActive tidak null
 //    vendors --> EVendor untuk mencetak status
-    @Builder.Default
     @Enumerated(EnumType.STRING)
     private EVendor status;
+
+    private String rejectionDescription;
 }
