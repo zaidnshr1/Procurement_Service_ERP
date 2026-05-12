@@ -9,8 +9,6 @@ import id.procurement.procurement_app.repository.VendorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,20 +83,11 @@ public class VendorServiceImpl implements VendorService{
 
     private void handleApprove(Vendor vendor) {
         if (vendor.getStatus() != EVendor.IN_REVIEW) throw new IllegalStateException("data harus berstatus IN_REVIEW!");
-        verifyDirector();
         vendor.setRejectionDescription(null);
     }
 
     private void handleReturn(Vendor vendor, String reason) {
         if (vendor.getStatus() != EVendor.IN_REVIEW) throw new IllegalStateException("data harus berstatus IN_REVIEW!");
-        verifyDirector();
         vendor.setRejectionDescription(reason);
-    }
-
-    private void verifyDirector() {
-        boolean isDirector = SecurityContextHolder.getContext().getAuthentication()
-                .getAuthorities().stream().anyMatch(
-                        a -> a.getAuthority().equals("ROLE_DIRECTOR"));
-        if (!isDirector) throw new AccessDeniedException("tidak terverfikasi sebagai direktur");
     }
 }
