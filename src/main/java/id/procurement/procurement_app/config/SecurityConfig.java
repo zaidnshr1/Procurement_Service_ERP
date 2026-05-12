@@ -1,5 +1,7 @@
 package id.procurement.procurement_app.config;
 
+import id.procurement.procurement_app.security.CustomAccessDeniedHandler;
+import id.procurement.procurement_app.security.CustomAuthEntryPoint;
 import id.procurement.procurement_app.security.jwt.AuthTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +41,10 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler(CustomAccessDeniedHandler)
+                        .authenticationEntryPoint(CustomAuthEntryPoint)
+                )
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
                         "/api/auth/**",
                         "/api/health/**"

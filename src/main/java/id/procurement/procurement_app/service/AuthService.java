@@ -7,6 +7,7 @@ import id.procurement.procurement_app.dto.auth.SignupRequest;
 import id.procurement.procurement_app.entity.ERole;
 import id.procurement.procurement_app.entity.Role;
 import id.procurement.procurement_app.entity.User;
+import id.procurement.procurement_app.exception.DuplicateResourceException;
 import id.procurement.procurement_app.repository.RoleRepository;
 import id.procurement.procurement_app.repository.UserRepository;
 import id.procurement.procurement_app.security.jwt.JwtUtils;
@@ -56,7 +57,7 @@ public class AuthService {
     public MessageResponse register(SignupRequest signupRequest) {
 
         if (userRepository.existsByUsername(signupRequest.username())) {
-            throw new RuntimeException("Error: username is already taken");
+            throw new DuplicateResourceException("Username '" + signupRequest.username() + "' sudah digunakan");
         }
 
         if (userRepository.existsByEmail(signupRequest.email())) {

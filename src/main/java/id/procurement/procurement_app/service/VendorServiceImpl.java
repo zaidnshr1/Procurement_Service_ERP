@@ -4,6 +4,8 @@ import id.procurement.procurement_app.dto.vendor.VendorRequest;
 import id.procurement.procurement_app.dto.vendor.VendorResponse;
 import id.procurement.procurement_app.entity.EVendor;
 import id.procurement.procurement_app.entity.Vendor;
+import id.procurement.procurement_app.exception.InvalidStatusTransitionException;
+import id.procurement.procurement_app.exception.VendorNotFoundException;
 import id.procurement.procurement_app.mapper.VendorMapper;
 import id.procurement.procurement_app.repository.VendorRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +33,7 @@ public class VendorServiceImpl implements VendorService{
 //    mengambil data detail vendor berdasarkan id
     @Override
     public VendorResponse getById(String id) {
-        Vendor vendor = vendorRepository.findById(id).orElseThrow();
+        Vendor vendor = vendorRepository.findById(id).orElseThrow(() -> new VendorNotFoundException(id));
         return vendorMapper.toResponse(vendor);
     }
 
@@ -57,7 +59,7 @@ public class VendorServiceImpl implements VendorService{
     @Transactional
     @Override
     public void updateStatus(String id, EVendor newStatus, String reason) {
-        Vendor vendor = vendorRepository.findById(id).orElseThrow();
+        Vendor vendor = vendorRepository.findById(id).orElseThrow(() -> new VendorNotFoundException(id));
 
         switch (newStatus) {
             case DRAFT -> handleDraft(vendor);
@@ -72,8 +74,13 @@ public class VendorServiceImpl implements VendorService{
     }
 
     private void handleDraft(Vendor vendor) {
-        if (vendor.getStatus() != EVendor.INACTIVE && vendor.getStatus() != EVendor.RETURNED && vendor.getStatus() != EVendor.DRAFT)
-            throw new IllegalStateException("data harus berstatus INACTIVE atau RETURNED");
+        if (vendor.getStatus() != EVendor.INACTIVE
+                && vendor.getStatus() != EVendor.RETURNED
+                && vendor.getStatus() != EVendor.DRAFT) {
+            throw new InvalidStatusTransitionException(
+                    vendor.getStatus().name(), EVendor.DRAFT.name()
+            );
+        }
     }
 
     private void handleSubmit(Vendor vendor) {
