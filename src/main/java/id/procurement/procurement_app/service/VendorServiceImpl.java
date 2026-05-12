@@ -41,7 +41,7 @@ public class VendorServiceImpl implements VendorService{
     @Override
     public Page<VendorResponse> getAll(EVendor status, Pageable pageable) {
         EVendor vendorStatus = (status == null) ? EVendor.ACTIVE : status;
-        Page<Vendor> vendors = vendorRepository.findAllByStatus(status, pageable);
+        Page<Vendor> vendors = vendorRepository.findAllByStatus(vendorStatus, pageable);
         return vendors.map(vendorMapper::toResponse);
     }
 
