@@ -85,12 +85,14 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, "terjadi kesalahan pada server", req.getRequestURI()));
     }
 
-    @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateResource(
-            DuplicateResourceException ex,
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFound(
+            UserNotFoundException ex,
             HttpServletRequest req
     ) {
-        
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponse.of(HttpStatus.NOT_FOUND, ex.getMessage(), req.getRequestURI()));
     }
 
 }

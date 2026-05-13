@@ -48,7 +48,7 @@ public class VendorServiceImpl implements VendorService{
 //    memperbarui data vendor berdasarkan id dan set ke DRAFT
     @Override
     public VendorResponse update(String id, VendorRequest vendorRequest) {
-        Vendor existingVendor = vendorRepository.findById(id).orElseThrow();
+        Vendor existingVendor = vendorRepository.findById(id).orElseThrow(() -> new VendorNotFoundException(id));
         vendorMapper.updateEntity(vendorRequest, existingVendor);
         existingVendor.setStatus(EVendor.DRAFT);
         Vendor savedVendor = vendorRepository.save(existingVendor);
@@ -84,17 +84,17 @@ public class VendorServiceImpl implements VendorService{
     }
 
     private void handleSubmit(Vendor vendor) {
-        if (vendor.getStatus() != EVendor.DRAFT) throw new IllegalStateException("data harus berstatus DRAFT!");
+        if (vendor.getStatus() != EVendor.DRAFT) throw new InvalidStatusTransitionException(vendor.getStatus().name(), EVendor.DRAFT.name());
         vendor.setRejectionDescription(null);
     }
 
     private void handleApprove(Vendor vendor) {
-        if (vendor.getStatus() != EVendor.IN_REVIEW) throw new IllegalStateException("data harus berstatus IN_REVIEW!");
+        if (vendor.getStatus() != EVendor.IN_REVIEW) throw new InvalidStatusTransitionException(vendor.getStatus().name(), EVendor.IN_REVIEW.name());
         vendor.setRejectionDescription(null);
     }
 
     private void handleReturn(Vendor vendor, String reason) {
-        if (vendor.getStatus() != EVendor.IN_REVIEW) throw new IllegalStateException("data harus berstatus IN_REVIEW!");
+        if (vendor.getStatus() != EVendor.IN_REVIEW) throw new InvalidStatusTransitionException(vendor.getStatus().name(), EVendor.IN_REVIEW.name());
         vendor.setRejectionDescription(reason);
     }
 }

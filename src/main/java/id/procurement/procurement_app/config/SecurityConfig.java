@@ -42,8 +42,8 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
-                        .accessDeniedHandler(CustomAccessDeniedHandler)
-                        .authenticationEntryPoint(CustomAuthEntryPoint)
+                        .accessDeniedHandler(new CustomAccessDeniedHandler())
+                        .authenticationEntryPoint(new CustomAuthEntryPoint())
                 )
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
                         "/api/auth/**",

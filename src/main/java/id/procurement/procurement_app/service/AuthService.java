@@ -8,6 +8,7 @@ import id.procurement.procurement_app.entity.ERole;
 import id.procurement.procurement_app.entity.Role;
 import id.procurement.procurement_app.entity.User;
 import id.procurement.procurement_app.exception.DuplicateResourceException;
+import id.procurement.procurement_app.exception.UserNotFoundException;
 import id.procurement.procurement_app.repository.RoleRepository;
 import id.procurement.procurement_app.repository.UserRepository;
 import id.procurement.procurement_app.security.jwt.JwtUtils;
@@ -61,7 +62,7 @@ public class AuthService {
         }
 
         if (userRepository.existsByEmail(signupRequest.email())) {
-            throw new RuntimeException("Error: email is already used");
+            throw new DuplicateResourceException("Error: email is already used");
         }
 
         User user = User.builder()
@@ -93,6 +94,6 @@ public class AuthService {
 
     private Role getRole(ERole role) {
         return roleRepository.findByRoleName(role)
-                .orElseThrow(() -> new RuntimeException("Error: role " + role + " is not found"));
+                .orElseThrow(() -> new UserNotFoundException("Error: role " + role + " is not found"));
     }
 }
